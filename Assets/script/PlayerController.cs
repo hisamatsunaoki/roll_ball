@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerController : MonoBehaviour
-{
+public class PlayerController : MonoBehaviour {
     public float speed; // 動く速さ
     public Text scoreText; // スコアの UI
     public Text winText; // リザルトの UI
@@ -10,8 +9,8 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb; // Rididbody
     private int score; // スコア
 
-    void Start()
-    {
+
+    void Start() {
         // Rigidbody を取得
         rb = GetComponent<Rigidbody>();
 
@@ -21,8 +20,7 @@ public class PlayerController : MonoBehaviour
         winText.text = "";
     }
 
-    void Update()
-    {
+    void Update() {
         // カーソルキーの入力を取得
         var moveHorizontal = Input.GetAxis("Horizontal");
         var moveVertical = Input.GetAxis("Vertical");
@@ -32,34 +30,39 @@ public class PlayerController : MonoBehaviour
 
         // Ridigbody に力を与えて玉を動かす
         rb.AddForce(movement * speed);
-    }
 
-    // 玉が他のオブジェクトにぶつかった時に呼び出される
-    void OnTriggerEnter(Collider other)
-    {
-        // ぶつかったオブジェクトが収集アイテムだった場合
-        if (other.gameObject.CompareTag("Pick up"))
-        {
-            // その収集アイテムを非表示にします
-            other.gameObject.SetActive(false);
+        GameObject[] gameObjs = GameObject.FindGameObjectsWithTag("Pick up");
+        foreach (GameObject ball in gameObjs) {
+            if (ball != null) {
+                Vector3 tmp = ball.transform.position;
+                float y = tmp.y;
 
-            // スコアを加算します
-            score = score + 1;
+                if (y < -10) {
+                    Debug.Log("here");
 
-            // UI の表示を更新します
-            SetCountText();
+                    // スコアを加算します
+                    score = score + 1;
+
+                    // UI の表示を更新します
+                    SetCountText();
+                    Destroy(ball);
+                }
+            }
         }
+
+
+
+
+
     }
 
     // UI の表示を更新する
-    void SetCountText()
-    {
+    void SetCountText() {
         // スコアの表示を更新
         scoreText.text = "Count: " + score.ToString();
 
         // すべての収集アイテムを獲得した場合
-        if (score >= 12)
-        {
+        if (score >= 10) {
             // リザルトの表示を更新
             winText.text = "You Win!";
         }
